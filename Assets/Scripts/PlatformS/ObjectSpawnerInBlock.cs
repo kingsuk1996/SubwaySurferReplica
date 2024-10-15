@@ -1,4 +1,5 @@
-
+//@Author Sabyasachi Thakur 
+//Last Modified On 3/4/2023
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ namespace RedApple.SubwaySurfer
 {
     public class ObjectSpawnerInBlock : MonoBehaviour
     {
+        [SerializeField] private Lanes LongBlockLane; // Langes to choose for eache spawnable object
         [SerializeField] private List<Spawnables> spawnableObjs = new List<Spawnables>(); // A list of all spwanble objects
 
         private int maxCoinChunkCount = 7;
@@ -89,15 +91,12 @@ namespace RedApple.SubwaySurfer
                     {
                         case (int)Lanes.Middle:
                             item.transform.position = this.transform.position + MidLaneOffset + XPosIncreaseV;
-                            item.transform.rotation = this.gameObject.transform.rotation;
                             break;
                         case (int)Lanes.Left:
                             item.transform.position = this.transform.position + LeftLaneOffset + XPosIncreaseV;
-                            item.transform.rotation = this.gameObject.transform.rotation;
                             break;
                         case (int)Lanes.Right:
                             item.transform.position = this.transform.position + RightLaneOffset + XPosIncreaseV;
-                            item.transform.rotation = this.gameObject.transform.rotation;
                             break;
                     }
                     if (count >= maxCoinChunkCount)
@@ -139,21 +138,16 @@ namespace RedApple.SubwaySurfer
                     {
                         case (int)Lanes.Middle:
                             item.transform.position = this.transform.position + MidLaneOffset + XPosIncreaseV;
-                            item.transform.rotation = this.gameObject.transform.rotation;
                             obstacle.ObstacleDir = ObstacleDirection.middle;
                             ObstacleType.OnSetObsPos?.Invoke();
                             break;
                         case (int)Lanes.Left:
                             item.transform.position = this.transform.position + LeftLaneOffset + XPosIncreaseV;
-                            item.transform.rotation = this.gameObject.transform.rotation;
-
                             obstacle.ObstacleDir = ObstacleDirection.left;
                             ObstacleType.OnSetObsPos?.Invoke();
                             break;
                         case (int)Lanes.Right:
                             item.transform.position = this.transform.position + RightLaneOffset + XPosIncreaseV;
-                            item.transform.rotation = this.gameObject.transform.rotation;
-
                             obstacle.ObstacleDir = ObstacleDirection.right;
                             ObstacleType.OnSetObsPos?.Invoke();
 
@@ -162,10 +156,10 @@ namespace RedApple.SubwaySurfer
                 }
 
                 //Increaseing X position of the object 
-                XPosIncreaseV.z -= xPosIncrease;
+                XPosIncreaseV.x -= xPosIncrease;
             }
             //resetting the X position vector after all spawn
-            XPosIncreaseV.z = 0;
+            XPosIncreaseV.x = 0;
 
         }
         int GetRandomLane(List<int> laneList)

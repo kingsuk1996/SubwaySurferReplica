@@ -28,12 +28,10 @@ namespace RedApple.SubwaySurfer
         [Space(10)]
 
         private bool once = true;
-        private bool canTrigger = false;
+        private bool canTrigger = true;
         private bool startBlinking = false;
         private GameObject collidedGO;
         private int lifeCounter = 3;
-        private BlockProperties blockProperties;
-
 
         /// <summary>
         /// Static Actions For Player Management
@@ -41,21 +39,14 @@ namespace RedApple.SubwaySurfer
         public static Action PlayerFly;
         public static Action PlayerBackToSurface;
         public static Action GameStarted;
+        public static Action OnPlayerCrushed;
         public static PlayerManager Instance;
-        public bool CanRightMove = false;
 
-        public Action OnPlayerCrushed;
         public Action SpawnNewPlatform;
-        public Action<Transform> OnBlockSpawn;
         public Action PlayerRun;
 
-        public Transform getPos = null;
         public Transform coinNextPos;
         public ShakeData shakeData;
-
-        int currentWaypoint = 0;
-
-        private TransformProperty transformProperty;
 
 
         private void Awake()
@@ -73,7 +64,6 @@ namespace RedApple.SubwaySurfer
 
         private void Update()
         {
-            
             if (Input.touchCount == 1 || Input.GetMouseButtonDown(0))
             {
                 if (once)
@@ -92,77 +82,18 @@ namespace RedApple.SubwaySurfer
                 }
             }
 
-            if (UImanager.Instance.CanMove)
+            if (UImanager.CanMove)
             {
                 speedParticle.SetActive(true);
-                transform.Translate(transform.forward * 13 * Time.deltaTime, Space.World);
             }
-
-            if (CanRightMove)
-                DecideDirection(blockProperties, true);
-            else if (!CanRightMove)
-                DecideDirection(blockProperties, false);
-        }
-
-        public void DecideDirection(BlockProperties _blockProperties, bool _isRight)
-        {
-            if (_blockProperties != null)
-            {
-                if (currentWaypoint < GetTransformProperty<int>(TransformProperty.count, _blockProperties, _isRight))
-                {
-                    if (Vector3.Distance(this.transform.position, GetTransformProperty<Vector3>(TransformProperty.position, _blockProperties, _isRight)) <= 0.09f)
-                    {
-                        currentWaypoint++;
-                        if (currentWaypoint == GetTransformProperty<int>(TransformProperty.count, _blockProperties, _isRight))
-                        {
-                            UImanager.Instance.CanMove = true;
-                            //CanRightMove = false;
-                            CanRightMove = !_isRight;
-                            currentWaypoint = 0;
-                        }
-                    }
-                    if (!UImanager.Instance.CanMove)
-                    {
-                        this.transform.position = Vector3.MoveTowards(this.transform.position, GetTransformProperty<Vector3>(TransformProperty.position, _blockProperties, _isRight), 10 * Time.deltaTime);
-                        Quaternion target = GetTransformProperty<Quaternion>(TransformProperty.rotation, _blockProperties, _isRight);
-                        this.transform.rotation = Quaternion.Lerp(this.transform.rotation, target, Time.deltaTime * 10);
-                    }
-                }
-            }
-        }
-
-        public T GetTransformProperty<T>(TransformProperty setTransformProperty, BlockProperties block, bool isRight)
-        {
-            transformProperty = setTransformProperty;
-
-            switch (transformProperty)
-            {
-                case TransformProperty.count:
-                    if (isRight)
-                        return (T)Convert.ChangeType(block.RightWayPoints.Count, typeof(T));
-                    else
-                        return (T)Convert.ChangeType(block.LeftWayPoints.Count, typeof(T));
-
-                case TransformProperty.position:
-                    if (isRight)
-                        return (T)Convert.ChangeType(block.RightWayPoints[currentWaypoint].position, typeof(T));
-                    else
-                        return (T)Convert.ChangeType(block.LeftWayPoints[currentWaypoint].position, typeof(T));
-
-                case TransformProperty.rotation:
-                    if (isRight)
-                        return (T)Convert.ChangeType(block.RightWayPoints[4].rotation, typeof(T));
-                    else
-                        return (T)Convert.ChangeType(block.LeftWayPoints[4].rotation, typeof(T));
-            }
-            return (T)Convert.ChangeType(block, typeof(T));
         }
 
         private void StartRunning()
         {
             controller.enabled = true;
-            //lanesSystem.enabled = true;
+            lanesSystem.enabled = true;
         }
+
 
         private void OnCollisionEnter(Collision collision)
         {
@@ -192,11 +123,11 @@ namespace RedApple.SubwaySurfer
             }
         }
 
-       
+
         private void LifeCalculation()
         {
             startBlinking = true;
-            UImanager.Instance.CanMove = false;
+            UImanager.CanMove = false;
             AudioManager.Instance.PlayOneShot("HurtSound");
             lifeCounter -= 1;
             UImanager.Instance.LifeSystem(lifeCounter);
@@ -220,16 +151,17 @@ namespace RedApple.SubwaySurfer
         IEnumerator PlayerRespawn()
         {
             yield return new WaitForSeconds(.1f);
-            collidedGO.SetActive(false);
 
+            collidedGO.SetActive(false);
             yield return new WaitForSeconds(2);
+
             Anim.enabled = true;
             speedParticle.SetActive(true);
             BlockSpeedController.Instance.BlockSpeed = 20;
-            UImanager.Instance.CanMove = true;
-
+            UImanager.CanMove = true;
             yield return new WaitForSeconds(2f);
-            BlockSpeedController.Instance.OnBlockSpeed?.Invoke();
+
+            BlockSpeedController.OnBlockSpeed?.Invoke();
         }
 
         IEnumerator GameOver()
@@ -237,11 +169,11 @@ namespace RedApple.SubwaySurfer
             Anim.enabled = true;
             Anim.SetBool("Death", true);
             speedParticle.SetActive(false);
-            UImanager.Instance.CanMove = false;
+            UImanager.CanMove = false;
             BlockSpeedController.Instance.BlockSpeed = 0;
             yield return new WaitForSeconds(1.7f);
 
-            UImanager.Instance.CanMove = false;
+            UImanager.CanMove = false;
             OnPlayerCrushed?.Invoke();
         }
 
@@ -282,6 +214,14 @@ namespace RedApple.SubwaySurfer
         {
             switch (other.gameObject.tag)
             {
+                case "SpawnTrig":
+                    if (canTrigger)
+                    {
+                        canTrigger = false;
+                        SpawnNewPlatform?.Invoke();
+                    }
+                    break;
+
                 case "Coin":
                     AudioManager.Instance.PlayOneShot("CoinCollect");
                     coinCounter++;
@@ -296,65 +236,21 @@ namespace RedApple.SubwaySurfer
                     rect.transform.position = Camera.main.WorldToScreenPoint(other.transform.position);
                     coinManager.MoveCoin(rect);
                     break;
-
-                case "NextBlockSpawnTrig":
-                    DecideBlockSpawnTrig(other, LaneDirection.forward);
-                    break;
-
-                case "RightBlockSpawnTrig":
-                    DecideBlockSpawnTrig(other, LaneDirection.right);
-                    UImanager.Instance.CanMove = false;
-                    CanRightMove = true;
-                    break;
-
-                case "LeftBlockSpawnTrig":
-                    DecideBlockSpawnTrig(other, LaneDirection.left);
-                    UImanager.Instance.CanMove = false;
-                    CanRightMove = false;
-                    break;
-
             }
         }
-        void DecideBlockSpawnTrig(Collider collider, LaneDirection direction)
-        {
-            blockProperties = collider.gameObject.GetComponentInParent<BlockProperties>();
-            blockProperties._LaneDirection = direction;
-            Debug.Log("SpawnPos ::" + blockProperties.SpawnPos.localPosition +"Name : " +blockProperties.gameObject.name);
-            StartCoroutine(DisableCollider(collider));
-            OnBlockSpawn?.Invoke(blockProperties.SpawnPos);
-        }
-
-        IEnumerator DisableCollider(Collider collider)
-        {
-            collider.gameObject.SetActive(false);
-            yield return new WaitForSeconds(1.5f);
-            collider.gameObject.SetActive(true);
-        }
-
         private void OnTriggerExit(Collider other)
         {
             switch (other.gameObject.tag)
             {
-                case "NextBlockSpawnTrig":
+                case "SpawnTrig":
+                    canTrigger = true;
                     break;
-                case "LeftBlockSpawnTrig":
-                    break;
-                case "RightBlockSpawnTrig":
-                    break;
-                case "BlockDisableTrig":
-                    blockProperties = other.gameObject.GetComponentInParent<BlockProperties>();
-                    StartCoroutine(DisableBlock(blockProperties.gameObject, blockProperties.blockType));
-                    break;
-                default:
+
+                case "Coin":
                     break;
             }
         }
 
-        IEnumerator DisableBlock(GameObject block, PoolObjectType poolObjectType)
-        {
-            yield return new WaitForSeconds(1f);
-            ObjectPool.OnReturningToPool(block, poolObjectType);
-        }
 
         private void TakeFlight()
         {
@@ -376,7 +272,6 @@ namespace RedApple.SubwaySurfer
             yield return new WaitForSeconds(5);
             PlayerBackToSurface?.Invoke();
         }
-
 
         private void OnEnable()
         {

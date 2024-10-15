@@ -20,11 +20,6 @@ TagManager:
   - TurnLeft
   - TurnRight
   - CarTrigger
-  - CrossingTrig
-  - RightBlockSpawnTrig
-  - NextBlockSpawnTrig
-  - LeftBlockSpawnTrig
-  - BlockDisableTrig
   layers:
   - Default
   - TransparentFX

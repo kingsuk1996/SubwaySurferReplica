@@ -24,6 +24,10 @@ public class GameSettings : ScriptableObject
     public float SpeedIncreaseDelay = 2f;
 
     [Space(10)]
+    [Header("UIManager")]
+    public float SpeedIncreaseOverDistance = 200;
+
+    [Space(10)]
     [Header("DogController")]
     public float DogSpeed = 1;
 

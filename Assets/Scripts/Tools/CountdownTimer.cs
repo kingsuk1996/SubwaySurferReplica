@@ -27,7 +27,7 @@ namespace RedApple.SubwaySurfer
         }
         void Update()
         {
-            if (UImanager.Instance.CanMove)
+            if (UImanager.CanMove)
             {
                 Timer();
             }
@@ -54,7 +54,7 @@ namespace RedApple.SubwaySurfer
             if (Mathf.Round(timeLeft) == IncreaseSpeedOverTime && isSpeedIncrease == false)
             {
                 isSpeedIncrease = true;
-                BlockSpeedController.Instance.OnBlockSpeed?.Invoke();
+                BlockSpeedController.OnBlockSpeed?.Invoke();
             }
 
         }

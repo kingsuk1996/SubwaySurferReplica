@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 6574883135441389997}
   - component: {fileID: 6223239599850200699}
   - component: {fileID: -2294469017698649107}
-  - component: {fileID: 5547540219559381276}
   m_Layer: 0
   m_Name: GarbageTruck
   m_TagString: Car
@@ -125,7 +124,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1243537290520524212}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ae9135c969603e40b28a19e2a2d90e5, type: 3}
   m_Name: 
@@ -133,6 +132,7 @@ MonoBehaviour:
   heightDistanceForJumpObstacle: 1.5
   heightDistanceForSlideObstacle: 0.03
   obstacleYpos: 1.07
+  length: 1
   obstacleType: 2
   ObstacleDir: 0
   IsObstacle: 1
@@ -150,19 +150,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   distanceOffset: 50
---- !u!114 &5547540219559381276
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1243537290520524212}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4add5479cf272e44796fb7260166fbeb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  typeOfObstacle: 1
 --- !u!1001 &6221387887661660469
 PrefabInstance:
   m_ObjectHideFlags: 0

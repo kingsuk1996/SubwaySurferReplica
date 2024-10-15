@@ -9,10 +9,10 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: SimpleTown
   m_Shader: {fileID: 4800000, guid: 8d1e11e2ed137c34199ef6dcb8d6a88d, type: 3}
-  m_ValidKeywords:
-  - CURVEDWORLD_BEND_TYPE_CLASSICRUNNER_Z_POSITIVE
+  m_ValidKeywords: []
   m_InvalidKeywords:
   - CURVEDWORLD_BEND_ID_1
+  - CURVEDWORLD_BEND_TYPE_CLASSICRUNNER_X_POSITIVE
   m_LightmapFlags: 6
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 1
@@ -117,7 +117,7 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _CurvedWorldBendSettings: {r: 2, g: 1, b: 0, a: 0}
+    - _CurvedWorldBendSettings: {r: 0, g: 1, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColorUI: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}

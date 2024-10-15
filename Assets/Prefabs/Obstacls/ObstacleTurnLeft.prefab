@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: -4048683475629153593}
   - component: {fileID: 7023422524348047491}
   - component: {fileID: 7674212026249768541}
-  - component: {fileID: 8178033391145985681}
   m_Layer: 0
   m_Name: ObstacleTurnLeft
   m_TagString: TurnLeft
@@ -123,7 +122,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1363231020749775389}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ae9135c969603e40b28a19e2a2d90e5, type: 3}
   m_Name: 
@@ -131,19 +130,7 @@ MonoBehaviour:
   heightDistanceForJumpObstacle: 3
   heightDistanceForSlideObstacle: 0.03
   obstacleYpos: 3
+  length: 0.5
   obstacleType: 3
   ObstacleDir: 0
   IsObstacle: 1
---- !u!114 &8178033391145985681
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1363231020749775389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4add5479cf272e44796fb7260166fbeb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  typeOfObstacle: 2

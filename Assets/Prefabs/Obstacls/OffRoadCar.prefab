@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 8622208372841864850}
   - component: {fileID: 9073000137125403871}
   - component: {fileID: 1283623676253067770}
-  - component: {fileID: -79415800224820049}
   m_Layer: 0
   m_Name: OffRoadCar
   m_TagString: Car
@@ -125,7 +124,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8841772821279129171}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ae9135c969603e40b28a19e2a2d90e5, type: 3}
   m_Name: 
@@ -133,6 +132,7 @@ MonoBehaviour:
   heightDistanceForJumpObstacle: 3
   heightDistanceForSlideObstacle: 0.03
   obstacleYpos: 1.5
+  length: 0.5
   obstacleType: 2
   ObstacleDir: 0
   IsObstacle: 1
@@ -150,19 +150,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   distanceOffset: 10
---- !u!114 &-79415800224820049
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8841772821279129171}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4add5479cf272e44796fb7260166fbeb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  typeOfObstacle: 1
 --- !u!1001 &8288156814077559795
 PrefabInstance:
   m_ObjectHideFlags: 0

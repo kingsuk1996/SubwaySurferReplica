@@ -11,7 +11,7 @@ namespace RedApple.SubwaySurfer
         private Coroutine coroutine;
         public float BlockSpeed;
 
-        public Action OnBlockSpeed;
+        public static Action OnBlockSpeed;
         public static BlockSpeedController Instance;
 
 

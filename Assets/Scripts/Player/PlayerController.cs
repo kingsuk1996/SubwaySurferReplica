@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace RedApple.SubwaySurfer
 {
@@ -18,19 +17,13 @@ namespace RedApple.SubwaySurfer
         [SerializeField] private CapsuleCollider PlayerColliderNormal;
         [SerializeField] private BoxCollider PlayercolliderSlide;
         [SerializeField] private Animator Anim;
-        [SerializeField] private PlayerLaneSystem playerLaneSystem;
+        [SerializeField] private PlayerLaneSystem Playerlanes;
         [SerializeField] private GameSettings gameSettings;
 
         [Space(10)]
         [SerializeField] private GameObject followCam;
         [SerializeField] private GameObject introCam;
         [SerializeField] private GameObject playerShadow;
-
-        [Space(10)]
-        [SerializeField] float MidLanePos;
-        [SerializeField] float LeftLanePos;
-        [SerializeField] float RightLanePos;
-        [SerializeField] float LaneChangeSpeed;
 
         private float totalDistance = 0;
         private float time;
@@ -45,10 +38,7 @@ namespace RedApple.SubwaySurfer
 
         public Action GoLeft;
         public Action GoRight;
-        public Action OnStart;
-        public Text Uitext;
-        public Coroutine coroutine;
-        public Lanes PlayerLanes;
+        public static Action OnStart;
 
 
         private void Start()
@@ -58,12 +48,11 @@ namespace RedApple.SubwaySurfer
             playerShadow.SetActive(false);
             PlayerColliderNormal = GetComponent<CapsuleCollider>();
             PlayercolliderSlide = GetComponent<BoxCollider>();
-            PlayerLanes = Lanes.Middle;
         }
 
         void StartRun()
         {
-            UImanager.Instance.CanMove = true;
+            UImanager.CanMove = true;
             Anim.SetTrigger("Run");
             playerShadow.SetActive(true);
             followCam.SetActive(true);
@@ -71,24 +60,17 @@ namespace RedApple.SubwaySurfer
         }
         private void Update()
         {
-            if (UImanager.Instance.CanMove)
+            if (UImanager.CanMove)
             {
                 time += Time.deltaTime;
-                //SwipeInput();
+                SwipeInput();
                 JumpInput = Input.GetKey(KeyCode.Space);
                 totalDistance = MathF.Round((time * BlockSpeedController.Instance.BlockSpeed));// - BlockSpeedController.Instance.BlockSpeed);
                 UpdateDistance(totalDistance);
-                SwipeControl();
             }
 
         }
-        public IEnumerator EnableTest()
-        {
-            Uitext.gameObject.SetActive(true);
-            yield return new WaitForSeconds(.1f);
-            Uitext.gameObject.SetActive(false);
 
-        }
         public void UpdateDistance(float _distance)
         {
             UImanager.Instance.TotalDistance = _distance;
@@ -111,9 +93,7 @@ namespace RedApple.SubwaySurfer
                 Slide();
             }
 
-
-
-            if (Input.touchCount > 0)
+            if (Input.touchCount >= 1)
             {
                 Touch touch = Input.GetTouch(0);
                 if (touch.phase == TouchPhase.Began)
@@ -121,7 +101,6 @@ namespace RedApple.SubwaySurfer
                     TakeMousePos = true;
                     firstPos = touch.position;
                     lastPos = touch.position;
-
                 }
 
                 else if (touch.phase == TouchPhase.Moved && TakeMousePos)
@@ -132,18 +111,18 @@ namespace RedApple.SubwaySurfer
                     {   //If the horizontal movement is greater than the vertical movement...
                         if ((lastPos.x > firstPos.x))
                         {   //Right swipe
-                            GoRight?.Invoke();
+
                             Anim.SetTrigger("Lean Right");
-
+                            GoRight?.Invoke();
 
                         }
-                        else
+                        else if ((lastPos.x < firstPos.x))
                         {   //Left swipe
-                            GoLeft?.Invoke();
+
                             Anim.SetTrigger("Lean Left");
-
+                            GoLeft?.Invoke();
                         }
-
+                        TakeMousePos = false;
                     }
                     else if (Mathf.Abs(lastPos.y - firstPos.y) > Mathf.Abs(lastPos.x - firstPos.x))
                     {   //the vertical movement is greater than the horizontal movement
@@ -152,12 +131,12 @@ namespace RedApple.SubwaySurfer
 
                             Jump();
                         }
-                        else
+                        else if (lastPos.y < firstPos.y)
                         {   //Down swipe
 
                             Slide();
                         }
-                        //TakeMousePos = false;
+                        TakeMousePos = false;
                     }
                     else
                     {
@@ -165,7 +144,6 @@ namespace RedApple.SubwaySurfer
                         {   //Right swipe
 
                             Anim.SetTrigger("Lean Right");
-
                             GoRight?.Invoke();
 
                         }
@@ -180,131 +158,29 @@ namespace RedApple.SubwaySurfer
 
                             Jump();
                         }
-                        else
+                        else if (lastPos.y < firstPos.y)
                         {   //Down swipe
 
                             Slide();
                         }
-                        // TakeMousePos = false;
+                        TakeMousePos = false;
                     }
-                    TakeMousePos = false;
                 }
 
                 if (touch.phase == TouchPhase.Ended)
                 {
-                    TakeMousePos = false;
+
                     firstPos = Vector2.zero;
                     lastPos = Vector2.zero;
                 }
             }
         }
 
-        Vector2 firstPressPos;
-        Vector2 lastPressPos;
-        Vector2 currentSwipe;
-
-        private void SwipeControl()
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                firstPressPos = Input.mousePosition;
-            }
-            if (Input.GetMouseButtonUp(0))
-            {
-                lastPressPos = Input.mousePosition;
-                currentSwipe = new Vector2(lastPressPos.x - firstPressPos.x, lastPressPos.y - firstPressPos.y);
-
-                //normalize the 2d vector
-                currentSwipe.Normalize();
-
-                //swipe upwards
-                if (currentSwipe.y > 0 && currentSwipe.x > -0.5f && currentSwipe.x < 0.5f)
-                {
-                    Debug.Log("up swipe");
-                    Jump();
-                }
-                //swipe down
-                if (currentSwipe.y < 0 && currentSwipe.x > -0.5f && currentSwipe.x < 0.5f)
-                {
-                    Debug.Log("down swipe");
-                    Slide();
-                }
-                //swipe left
-                if (currentSwipe.x < 0 && currentSwipe.y > -0.5f && currentSwipe.y < 0.5f)
-                {
-                    if (PlayerLanes == Lanes.Right || PlayerLanes == Lanes.Middle)
-                    {
-                        Debug.Log("left swipe");
-                        //GoLeft?.Invoke();
-                        Goleft();
-                        Anim.SetTrigger("Lean Left");
-                    }
-                }
-                //swipe right
-                if (currentSwipe.x > 0 && currentSwipe.y > -0.5f && currentSwipe.y < 0.5f)
-                {
-                    if (PlayerLanes == Lanes.Left || PlayerLanes == Lanes.Middle)
-                    {
-                        Debug.Log("right swipe");
-                        //GoRight?.Invoke();
-                        Goright();
-                        Anim.SetTrigger("Lean Right");
-                    }
-                }
-            }
-        }
-
-        private void Goleft()
-        {
-            switch (PlayerLanes)
-            {
-                case Lanes.Middle:
-                    PlayerLanes = Lanes.Left;
-                    break;
-                case Lanes.Right:
-                    PlayerLanes = Lanes.Middle;
-                    break;
-            }
-            StartCoroutine(PlayerLaneHandler(LeftLanePos));
-        }
-
-        private void Goright()
-        {
-            switch (PlayerLanes)
-            {
-                case Lanes.Middle:
-                    PlayerLanes = Lanes.Right;
-                    break;
-                case Lanes.Left:
-                    PlayerLanes = Lanes.Middle;
-                    break;
-            }
-            StartCoroutine(PlayerLaneHandler(RightLanePos));
-        }
-
-
-        IEnumerator PlayerLaneHandler(float thresold)
-        {
-            UImanager.Instance.CanMove = false;
-            Vector3 targetpos = this.transform.position + transform.right * thresold + transform.forward;
-            while (this.transform.position != targetpos)
-            {
-                yield return Time.deltaTime;
-                transform.position = Vector3.MoveTowards(this.transform.position, targetpos, LaneChangeSpeed * Time.deltaTime);
-            }
-            UImanager.Instance.CanMove = true;
-        }
         private void Jump()
         {
             //if (canJump && CanSlide)
             if (canJump)
             {
-                if (coroutine != null)
-                {
-
-                    StopCoroutine(coroutine);
-                }
-                coroutine = StartCoroutine(EnableTest());
                 Anim.SetBool("Jump", true);
                 rb.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
                 canJump = false;
@@ -323,12 +199,6 @@ namespace RedApple.SubwaySurfer
             // if (CanSlide && canJump)
             if (CanSlide)
             {
-                if (coroutine != null)
-                {
-
-                    StopCoroutine(coroutine);
-                }
-                coroutine = StartCoroutine(EnableTest());
                 CanSlide = false;
                 Anim.SetBool("Slide", true);
                 PlayerColliderNormal.enabled = false;

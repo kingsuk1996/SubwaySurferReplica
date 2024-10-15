@@ -58,8 +58,7 @@ namespace RedApple.SubwaySurfer
         public Text Distance;
         public Text coinCounter;
 
-        public bool CanMove = false;
-
+        public static bool CanMove = false;
         public static UImanager Instance;
 
         private float deltaTime;
@@ -162,7 +161,7 @@ namespace RedApple.SubwaySurfer
         {
             float duration = .5f;
             AudioManager.Instance.Play("Intro");
-            //cameraAnim.enabled = true;
+            cameraAnim.enabled = true;
 
             playerAnim.SetTrigger("Intro");
             dogAnim.SetTrigger("Intro");
@@ -176,6 +175,7 @@ namespace RedApple.SubwaySurfer
             yield return new WaitForSeconds(1f);
 
             Time.timeScale = 0;
+            Debug.LogError("Cure");
             playButton.DOAnchorPos(end.anchoredPosition, duration).SetUpdate(true);
             DOTween.To(() => autoPlayBar.fillAmount, x => autoPlayBar.fillAmount = x, 1, 10f).SetUpdate(true).OnComplete(() => OnPlayButtonClick());
 
@@ -202,7 +202,7 @@ namespace RedApple.SubwaySurfer
             playButton.DOAnchorPos(start.anchoredPosition, duration).SetUpdate(true);
             playerController.enabled = true;
             Panelhandler(GameConstants.GamePlayPanel);
-            playerController.OnStart?.Invoke();
+            PlayerController.OnStart?.Invoke();
             bee.SetActive(false);
             shoelace.SetActive(false);
         }
@@ -233,14 +233,14 @@ namespace RedApple.SubwaySurfer
 
         private void OnEnable()
         {
-            PlayerManager.Instance.OnPlayerCrushed += GameOver;
+            PlayerManager.OnPlayerCrushed += GameOver;
             CountdownTimer.Instance.TimesUp += GameOver;
             //ScrollSnapBase.OnPageChange += PageChange;
         }
 
         private void OnDisable()
         {
-            PlayerManager.Instance.OnPlayerCrushed -= GameOver;
+            PlayerManager.OnPlayerCrushed -= GameOver;
             CountdownTimer.Instance.TimesUp -= GameOver;
             //ScrollSnapBase.OnPageChange -= PageChange;
         }

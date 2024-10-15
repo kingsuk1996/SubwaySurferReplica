@@ -1,13 +1,13 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 namespace RedApple.SubwaySurfer
 {
     public class PlayerLaneSystem : MonoBehaviour
     {
-        public Lanes PlayerLanes;
+        [SerializeField] private Lanes PlayerLanes;
         [SerializeField] private Hights PlayerHights;
         [SerializeField] private PlayerController controller;
+        [SerializeField] private Animator Anim;
 
         [Space(10)]
         [SerializeField] float MidLanePos;
@@ -33,29 +33,38 @@ namespace RedApple.SubwaySurfer
 
         private void Update()
         {
-            if (UImanager.Instance.CanMove)
+            if (UImanager.CanMove)
             {
-                //PlayerLaneHandler();
-                //InputForPlayerLaneChange();
+                PlayerLaneHandler();
+                InputForPlayerLaneChange();
+               
                 PlayerHightHandler();
             }
         }
 
         #region PlayerLanesHandelling
-        IEnumerator PlayerLaneHandler(float thresold)
+        void PlayerLaneHandler()
         {
-            UImanager.Instance.CanMove = false;
-            Vector3 targetpos = transform.position + transform.right * thresold + transform.forward;
-            while (this.transform.position != targetpos)
+            switch (PlayerLanes)
             {
-                yield return Time.deltaTime;
-                transform.position = Vector3.MoveTowards(transform.position,targetpos, LaneChangeSpeed*Time.deltaTime );
+                case Lanes.Middle:
+                    MoveToNextLane(MidLanePos);
+                   
+                    break;
+                case Lanes.Left:
+                    MoveToNextLane(LeftLanePos);
+                   
+                    break;
+                        
+                case Lanes.Right:
+                    MoveToNextLane(RightLanePos);
+                  
+                    break;
             }
-            UImanager.Instance.CanMove = true;
         }
 
 
-       /*void InputForPlayerLaneChange()
+        void InputForPlayerLaneChange()
         {
             LeftInput = Input.GetKeyDown(KeyCode.A);
             RightInput = Input.GetKeyDown(KeyCode.D);
@@ -84,16 +93,17 @@ namespace RedApple.SubwaySurfer
                     }
                     break;
             }
-        }*/
+        }
+
+       
+        void MoveToNextLane(float LanePos)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, transform.position.y, LanePos), LaneChangeSpeed*Time.deltaTime);
+        }
 
         void GoLeft()
         {
-            if (controller.coroutine != null)
-            {
-                StopCoroutine(controller.coroutine);
-            }
-            controller.coroutine = StartCoroutine(controller.EnableTest());
-
+          
             switch (PlayerLanes)
             {
                 case Lanes.Middle:
@@ -103,17 +113,11 @@ namespace RedApple.SubwaySurfer
                     PlayerLanes = Lanes.Middle;
                     break;
             }
-            StartCoroutine(PlayerLaneHandler(-RightLanePos));
         }
 
         void GoRight()
         {
-            if (controller. coroutine != null)
-            {
-                StopCoroutine(controller.coroutine);
-            }
-            controller. coroutine = StartCoroutine(controller.EnableTest());
-
+           
             switch (PlayerLanes)
             {
                 case Lanes.Middle:
@@ -123,7 +127,6 @@ namespace RedApple.SubwaySurfer
                     PlayerLanes = Lanes.Middle;
                     break;
             }
-            StartCoroutine(PlayerLaneHandler(RightLanePos));
         }
 
         #endregion
