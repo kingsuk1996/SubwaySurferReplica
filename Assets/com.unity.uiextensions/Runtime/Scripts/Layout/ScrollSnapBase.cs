@@ -429,7 +429,7 @@ namespace UnityEngine.UI.Extensions
             GetPositionforPage(_currentPage, ref _lerp_target);
             OnCurrentScreenChange(_currentPage);
         }
-
+        public static Action<int> OnPageChange;
         /// <summary>
         /// notifies pagination indicator and navigation buttons of a screen change
         /// </summary>
@@ -437,8 +437,9 @@ namespace UnityEngine.UI.Extensions
         {
             ChangeBulletsInfo(currentScreen);
             ToggleNavigationButtons(currentScreen);
+            OnPageChange?.Invoke(_currentPage);
         }
-
+        
         /// <summary>
         /// changes the bullets on the bottom of the page - pagination
         /// </summary>
